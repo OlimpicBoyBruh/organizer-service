@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="ru.organaizersrv.uiorganizerapp.controller.OrganizerController">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+    <top>
+        <VBox spacing="10">
+            <HBox alignment="CENTER" spacing="10">
+                <Label text="Источник данных:" />
+                <ComboBox fx:id="dataSourceComboBox" promptText="Выберите источник данных" />
+            </HBox>
+            <HBox alignment="CENTER" spacing="10">
+                <TextField fx:id="nameSearchField" promptText="Поиск по названию" HBox.hgrow="ALWAYS" />
+                <TextField fx:id="dateSearchField" promptText="Поиск по дате (дд.мм.гггг)" HBox.hgrow="ALWAYS" />
+                <TextField fx:id="tagSearchField" promptText="Поиск по тегу" HBox.hgrow="ALWAYS" />
+                <Button onAction="#searchMaterials" text="Поиск" />
+            </HBox>
+        </VBox>
+    </top>
+    <left>
+        <VBox spacing="10">
+            <Label text="Дисциплины:" style="-fx-font-weight: bold;" />
+            <TreeView fx:id="disciplineTree" VBox.vgrow="ALWAYS" prefWidth="200" />
+            <HBox spacing="5">
+                <TextField fx:id="newDisciplineField" promptText="Новая дисциплина" HBox.hgrow="ALWAYS" />
+                <Button onAction="#addDiscipline" text="Добавить" />
+            </HBox>
+        </VBox>
+    </left>
+    <center>
+        <SplitPane orientation="HORIZONTAL" dividerPositions="0.3">
+            <!-- Список материалов слева -->
+            <VBox spacing="5">
+                <Label text="Материалы дисциплины:" style="-fx-font-weight: bold;" />
+                <ListView fx:id="materialsList" VBox.vgrow="ALWAYS" />
+                <Button onAction="#addMaterial" text="Добавить новый материал" maxWidth="Infinity" />
+            </VBox>
+            
+            <!-- Детали материала справа -->
+            <SplitPane dividerPositions="0.6" orientation="VERTICAL">
+                <VBox spacing="10">
+                    <Label text="Информация о материале:" style="-fx-font-weight: bold;" />
+                    <Label fx:id="materialName" />
+                    <Label fx:id="materialDate" />
+                    <Label fx:id="materialTag" />
+                    <TextArea fx:id="materialDetails" editable="false" promptText="Детали выбранного материала" VBox.vgrow="ALWAYS" />
+                </VBox>
+                <VBox spacing="10">
+                    <Label text="Прикрепленные файлы и ссылки:" style="-fx-font-weight: bold;" />
+                    <ListView fx:id="attachmentsList" VBox.vgrow="ALWAYS" />
+                    <HBox spacing="10" alignment="CENTER">
+                        <Button onAction="#attachFile" text="Прикрепить файл" />
+                        <Button onAction="#attachLink" text="Прикрепить ссылку" />
+                        <Button onAction="#downloadFile" text="Открыть" />
+                        <Button onAction="#deleteFile" text="Удалить" />
+                    </HBox>
+                </VBox>
+            </SplitPane>
+        </SplitPane>
+    </center>
+</BorderPane>
