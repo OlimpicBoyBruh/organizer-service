@@ -31,6 +31,7 @@
                 <TextField fx:id="newDisciplineField" promptText="Новая дисциплина" HBox.hgrow="ALWAYS" />
                 <Button onAction="#addDiscipline" text="Добавить" />
             </HBox>
+            <Button onAction="#updateDiscipline" text="Обновить дисциплину" maxWidth="Infinity"/>
         </VBox>
     </left>
     <center>

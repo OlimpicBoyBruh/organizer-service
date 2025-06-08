@@ -6,7 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -118,6 +120,93 @@ public class TestDataGenerator {
     }
 
     /**
+     * Транслитерирует русский текст в латиницу
+     */
+    private String transliterate(String text) {
+        Map<Character, String> cyrillicToLatin = new HashMap<>();
+        
+        // Русские буквы в латиницу
+        cyrillicToLatin.put('а', "a");
+        cyrillicToLatin.put('б', "b");
+        cyrillicToLatin.put('в', "v");
+        cyrillicToLatin.put('г', "g");
+        cyrillicToLatin.put('д', "d");
+        cyrillicToLatin.put('е', "e");
+        cyrillicToLatin.put('ё', "yo");
+        cyrillicToLatin.put('ж', "zh");
+        cyrillicToLatin.put('з', "z");
+        cyrillicToLatin.put('и', "i");
+        cyrillicToLatin.put('й', "y");
+        cyrillicToLatin.put('к', "k");
+        cyrillicToLatin.put('л', "l");
+        cyrillicToLatin.put('м', "m");
+        cyrillicToLatin.put('н', "n");
+        cyrillicToLatin.put('о', "o");
+        cyrillicToLatin.put('п', "p");
+        cyrillicToLatin.put('р', "r");
+        cyrillicToLatin.put('с', "s");
+        cyrillicToLatin.put('т', "t");
+        cyrillicToLatin.put('у', "u");
+        cyrillicToLatin.put('ф', "f");
+        cyrillicToLatin.put('х', "kh");
+        cyrillicToLatin.put('ц', "ts");
+        cyrillicToLatin.put('ч', "ch");
+        cyrillicToLatin.put('ш', "sh");
+        cyrillicToLatin.put('щ', "sch");
+        cyrillicToLatin.put('ъ', "");
+        cyrillicToLatin.put('ы', "y");
+        cyrillicToLatin.put('ь', "");
+        cyrillicToLatin.put('э', "e");
+        cyrillicToLatin.put('ю', "yu");
+        cyrillicToLatin.put('я', "ya");
+        
+        // Прописные буквы
+        cyrillicToLatin.put('А', "A");
+        cyrillicToLatin.put('Б', "B");
+        cyrillicToLatin.put('В', "V");
+        cyrillicToLatin.put('Г', "G");
+        cyrillicToLatin.put('Д', "D");
+        cyrillicToLatin.put('Е', "E");
+        cyrillicToLatin.put('Ё', "Yo");
+        cyrillicToLatin.put('Ж', "Zh");
+        cyrillicToLatin.put('З', "Z");
+        cyrillicToLatin.put('И', "I");
+        cyrillicToLatin.put('Й', "Y");
+        cyrillicToLatin.put('К', "K");
+        cyrillicToLatin.put('Л', "L");
+        cyrillicToLatin.put('М', "M");
+        cyrillicToLatin.put('Н', "N");
+        cyrillicToLatin.put('О', "O");
+        cyrillicToLatin.put('П', "P");
+        cyrillicToLatin.put('Р', "R");
+        cyrillicToLatin.put('С', "S");
+        cyrillicToLatin.put('Т', "T");
+        cyrillicToLatin.put('У', "U");
+        cyrillicToLatin.put('Ф', "F");
+        cyrillicToLatin.put('Х', "Kh");
+        cyrillicToLatin.put('Ц', "Ts");
+        cyrillicToLatin.put('Ч', "Ch");
+        cyrillicToLatin.put('Ш', "Sh");
+        cyrillicToLatin.put('Щ', "Sch");
+        cyrillicToLatin.put('Ъ', "");
+        cyrillicToLatin.put('Ы', "Y");
+        cyrillicToLatin.put('Ь', "");
+        cyrillicToLatin.put('Э', "E");
+        cyrillicToLatin.put('Ю', "Yu");
+        cyrillicToLatin.put('Я', "Ya");
+        
+        StringBuilder result = new StringBuilder();
+        for (char c : text.toCharArray()) {
+            if (cyrillicToLatin.containsKey(c)) {
+                result.append(cyrillicToLatin.get(c));
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
+    }
+
+    /**
      * Создает PDF файл с заданным именем и содержимым
      */
     private String createPdfFile(String fileName, String discipline) throws Exception {
@@ -128,12 +217,14 @@ public class TestDataGenerator {
         PDPage page = new PDPage();
         document.addPage(page);
         
-        // Добавляем текст в документ на английском языке (чтобы обойти проблему с кириллицей)
+        // Транслитерируем название дисциплины для совместимости с PDType1Font
+        String transliteratedDiscipline = transliterate(discipline);
+        
         try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 14);
             contentStream.newLineAtOffset(100, 700);
-            contentStream.showText("Study Material: " + discipline);
+            contentStream.showText("Study Material: " + transliteratedDiscipline);
             
             contentStream.setFont(PDType1Font.HELVETICA, 12);
             contentStream.newLineAtOffset(0, -30);
@@ -141,7 +232,7 @@ public class TestDataGenerator {
             
             contentStream.newLineAtOffset(0, -20);
             
-            // Добавляем разное содержимое в зависимости от дисциплины (на английском)
+            // Добавляем разное содержимое в зависимости от дисциплины (используя транслитерацию)
             switch (discipline) {
                 case "Математика":
                     contentStream.showText("1. Introduction to Mathematical Analysis");
@@ -206,7 +297,7 @@ public class TestDataGenerator {
             contentStream.endText();
         }
         
-        // Сохраняем документ
+        // Сохраняем документ и закрываем его, чтобы избежать утечки ресурсов
         document.save(filePath);
         document.close();
         

@@ -292,6 +292,41 @@ public class OrganizerController {
     }
     
     @FXML
+    private void updateDiscipline() {
+        TreeItem<String> selectedItem = disciplineTree.getSelectionModel().getSelectedItem();
+        if (selectedItem == null || selectedItem.getValue().equals("Дисциплины")) {
+            showAlert("Ошибка", "Не выбрана дисциплина", "Пожалуйста, выберите дисциплину для обновления.");
+            return;
+        }
+        
+        String oldDisciplineName = selectedItem.getValue();
+        
+        TextInputDialog dialog = new TextInputDialog(oldDisciplineName);
+        dialog.setTitle("Обновить дисциплину");
+        dialog.setHeaderText("Введите новое название для дисциплины \"" + oldDisciplineName + "\"");
+        dialog.setContentText("Новое название:");
+        
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent() && !result.get().trim().isEmpty()) {
+            String newDisciplineName = result.get().trim();
+            
+            if (newDisciplineName.equals(oldDisciplineName)) {
+                // Если имя не изменилось, ничего не делаем
+                return;
+            }
+            
+            boolean updated = disciplineService.updateDiscipline(oldDisciplineName, newDisciplineName);
+            if (updated) {
+                loadDisciplines();
+                materialDetails.setText("Дисциплина \"" + oldDisciplineName + "\" успешно переименована в \"" + newDisciplineName + "\"");
+            } else {
+                showAlert("Ошибка", "Не удалось обновить дисциплину", 
+                         "Возможно, дисциплина с таким названием уже существует или произошла другая ошибка.");
+            }
+        }
+    }
+    
+    @FXML
     private void attachFile() {
         if (currentMaterial == null) {
             showAlert("Ошибка", "Не выбран материал", "Пожалуйста, выберите материал для прикрепления файла.");

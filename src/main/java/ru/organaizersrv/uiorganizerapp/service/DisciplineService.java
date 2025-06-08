@@ -27,6 +27,14 @@ public interface DisciplineService {
     boolean deleteDiscipline(String disciplineName);
     
     /**
+     * Обновить название дисциплины
+     * @param oldName старое название дисциплины
+     * @param newName новое название дисциплины
+     * @return true если обновление успешно, иначе false
+     */
+    boolean updateDiscipline(String oldName, String newName);
+    
+    /**
      * Проверить существование дисциплины
      * @param disciplineName название дисциплины
      * @return true если дисциплина существует, иначе false

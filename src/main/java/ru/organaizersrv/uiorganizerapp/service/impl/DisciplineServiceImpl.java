@@ -43,6 +43,38 @@ public class DisciplineServiceImpl implements DisciplineService {
     }
     
     @Override
+    public boolean updateDiscipline(String oldName, String newName) {
+        if (oldName == null || oldName.trim().isEmpty() || 
+            newName == null || newName.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Проверяем существование старой дисциплины
+        if (!disciplineDAO.disciplineExists(oldName)) {
+            return false;
+        }
+        
+        // Проверяем, что новое имя еще не используется
+        if (disciplineDAO.disciplineExists(newName) && !oldName.equals(newName)) {
+            return false;
+        }
+        
+        // Сначала добавляем новую дисциплину
+        boolean added = disciplineDAO.addDiscipline(newName.trim());
+        if (!added) {
+            return false;
+        }
+        
+        // Если это одна и та же дисциплина, считаем что обновление успешно
+        if (oldName.equals(newName)) {
+            return true;
+        }
+        
+        // Затем удаляем старую дисциплину
+        return disciplineDAO.deleteDiscipline(oldName);
+    }
+    
+    @Override
     public boolean disciplineExists(String disciplineName) {
         if (disciplineName == null || disciplineName.trim().isEmpty()) {
             return false;
